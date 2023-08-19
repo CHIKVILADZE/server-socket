@@ -3,15 +3,17 @@ const app = express();
 const cors = require('cors');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
+require('dotenv').config();
 
 app.use(cors());
 app.use(bodyParser.json());
 
 const dbConnection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'users',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  connectTimeout: 60000,
 });
 
 dbConnection.connect((err) => {
@@ -25,7 +27,7 @@ dbConnection.connect((err) => {
 const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: 'https://client-socket-ten.vercel.app',
   },
 });
 
@@ -47,7 +49,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('players', (args) => {
-    const sql = 'INSERT INTO players (name) VALUES (?)';
+    const sql = 'INSERT INTO brndfy63woigvwigayvo.players (name) VALUES (?)';
+
     dbConnection.query(sql, [args.name], (err, result) => {
       if (err) {
         console.error('Error saving name to the database:', err);
@@ -60,7 +63,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('fetchNames', () => {
-    const fetchNamesSQL = 'SELECT name FROM players';
+    const fetchNamesSQL = 'SELECT name FROM brndfy63woigvwigayvo.players';
     dbConnection.query(fetchNamesSQL, (err, results) => {
       if (err) {
         console.error('Error fetching names from the database:', err);
