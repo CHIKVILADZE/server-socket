@@ -28,6 +28,8 @@ const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer, {
   cors: {
     origin: 'https://client-socket-ten.vercel.app',
+    methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
